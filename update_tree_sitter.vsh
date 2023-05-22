@@ -35,7 +35,7 @@ lib_dir := join_path(working_dir, 'lib')
 
 // Check if version txt file exists.
 // Clone repo if outdated or file does not exist.
-version_file_path := join_path(working_dir, 'ts_version.json')
+version_file_path := join_path(lib_dir, 'ts_version.json')
 mut got_version := ''
 
 if exists(version_file_path) {
