@@ -62,6 +62,14 @@ tree := p.parse_string(source: code, tree: old_tree.raw_tree)
 
 See examples in the `examples` directory.
 
+## Project structure
+
+- `examples` — examples of using the library
+- `languages` — languages sources (only V for now)
+- `lib` — tree-sitter C lib sources
+- `tests` — tests for the bindings
+- `tree_sitter` — bindings sources
+
 ## Updating tree-sitter
 
 To update the tree-sitter lib, run:
