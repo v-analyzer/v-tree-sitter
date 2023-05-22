@@ -1,7 +1,7 @@
 module main
 
 import tree_sitter
-import tree_sitter_v as v
+import languages.tree_sitter_v as v
 import time
 
 fn main() {

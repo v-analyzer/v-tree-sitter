@@ -1,18 +1,24 @@
 # V tree-sitter
 
-[![Test](https://github.com/vlang-association/spavn-analyzer/actions/workflows/test_tree_sitter.yml/badge.svg)](https://github.com/vlang-association/spavn-analyzer/actions/workflows/test_tree_sitter.yml)
+[![Test](https://github.com/spavn-analyzer/v-tree-sitter/actions/workflows/test_tree_sitter.yml/badge.svg)](https://github.com/spavn-analyzer/v-tree-sitter/actions/workflows/test_tree_sitter.yml)
 
 V bindings for the
 [tree-sitter](https://github.com/tree-sitter/tree-sitter)
 parsing library.
+
+## Installation
+
+```sh
+v install https://github.com/spavn-analyzer/v-tree-sitter
+```
 
 ## Basic Usage
 
 Create a parser with a grammar:
 
 ```v
-import tree_sitter
-import tree_sitter_v as v
+import v_tree_sitter.tree_sitter
+import v_tree_sitter.languages.tree_sitter_v
 
 mut p := tree_sitter.new_parser[v.NodeType](v.type_factory)
 p.set_language(v.language)
@@ -30,7 +36,8 @@ Inspect the syntax tree:
 ```v skip
 root := tree.root_node()
 
-// (source_file (function_declaration name: (identifier) signature: (signature parameters: (parameter_list)) body: (block)))
+// (source_file (function_declaration name: (identifier) signature: 
+// (signature parameters: (parameter_list)) body: (block)))
 println(root)
 
 fc := root.first_child()?
@@ -67,10 +74,12 @@ v update_tree_sitter.vsh
 
 This project initially started by
 [nedpals](https://github.com/nedpals)
-and after that in 2023 it was heavily modified by the VOSCA.
+and after that in 2023 it was heavily modified by the
+[VOSCA](https://github.com/vlang-association).
 
 ## License
 
-This project is under the **MIT License**. See the
+This project is under the **MIT License**.
+See the
 [LICENSE](https://github.com/vlang-association/spavn-analyzer/blob/master/tree_sitter/LICENSE)
 file for the full license text.
