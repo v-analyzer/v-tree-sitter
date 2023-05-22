@@ -18,7 +18,7 @@ Create a parser with a grammar:
 
 ```v
 import v_tree_sitter.tree_sitter
-import v_tree_sitter.languages.tree_sitter_v
+import v_tree_sitter.languages.tree_sitter_v as v
 
 mut p := tree_sitter.new_parser[v.NodeType](v.type_factory)
 p.set_language(v.language)
