@@ -2,7 +2,6 @@ module tree_sitter
 
 pub type TSParser = C.TSParser
 pub type TSLanguage = C.TSLanguage
-pub type TSNode = C.TSNode
 
 pub struct Parser[T] {
 mut:
@@ -79,6 +78,29 @@ pub:
 [inline]
 pub fn (node Node[T]) text(text string) string {
 	return node.raw_node.text(text)
+}
+
+[inline]
+pub fn (node Node[T]) text_matches(all_text string, text_to_find string) bool {
+	text_len := u32(text_to_find.len)
+	node_len := node.text_length()
+
+	// if the text we are looking for does not match in length,
+	// then the text cannot exactly match
+	if text_len != node_len {
+		return false
+	}
+
+	return node.text(all_text) == text_to_find
+}
+
+[inline]
+pub fn (node Node[T]) first_char(text string) u8 {
+	start_index := node.start_byte()
+	if start_index >= u32(text.len) {
+		return 0
+	}
+	return text[start_index]
 }
 
 [inline]
@@ -164,6 +186,19 @@ pub fn (node Node[T]) parent_nth(depth int) ?Node[T] {
 		res = res.parent()?
 	}
 	return new_tsnode[T](node.type_factory, res)
+}
+
+pub fn (node Node[T]) is_parent_of(other Node[T]) bool {
+	mut parent := other.parent() or { return false }
+
+	for {
+		if parent.equal(node) {
+			return true
+		}
+		parent = parent.parent() or { break }
+	}
+
+	return false
 }
 
 pub fn (node Node[T]) child(pos u32) ?Node[T] {
@@ -287,6 +322,11 @@ pub fn (node Node[T]) last_node_by_type(type_name T) ?Node[T] {
 
 [inline]
 pub fn (node Node[T]) == (other_node Node[T]) bool {
+	return C.ts_node_eq(node.raw_node, other_node.raw_node)
+}
+
+[inline]
+pub fn (node Node[T]) equal(other_node Node[T]) bool {
 	return C.ts_node_eq(node.raw_node, other_node.raw_node)
 }
 

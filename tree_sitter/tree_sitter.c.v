@@ -196,7 +196,7 @@ fn C.ts_node_named_descendant_for_point_range(node C.TSNode, start_point C.TSPoi
 
 fn C.ts_node_eq(node C.TSNode, another_node C.TSNode) bool
 
-fn (node C.TSNode) text(text string) string {
+pub fn (node C.TSNode) text(text string) string {
 	start_index := node.start_byte()
 	end_index := node.end_byte()
 	if start_index >= end_index || start_index >= u32(text.len) || end_index > u32(text.len) {
@@ -215,7 +215,15 @@ fn (node C.TSNode) sexpr_str() string {
 	return unsafe { sexpr.vstring() }
 }
 
-fn (node C.TSNode) start_point() C.TSPoint {
+[inline]
+pub fn (node C.TSNode) text_length() u32 {
+	start := node.start_byte()
+	end := node.end_byte()
+	return end - start
+}
+
+[inline]
+pub fn (node C.TSNode) start_point() C.TSPoint {
 	if node.is_null() {
 		return C.TSPoint{0, 0}
 	}
@@ -257,7 +265,7 @@ fn (node C.TSNode) range() C.TSRange {
 	}
 }
 
-fn (node C.TSNode) type_name() string {
+pub fn (node C.TSNode) type_name() string {
 	if node.is_null() {
 		return '<null node>'
 	}
@@ -297,7 +305,21 @@ fn (node C.TSNode) is_error() bool {
 	return C.ts_node_has_error(node)
 }
 
-fn (node C.TSNode) parent() ?C.TSNode {
+pub fn (node C.TSNode) parent_nth(depth int) ?TSNode {
+	if node.is_null() {
+		return none
+	}
+	mut res := node
+	for _ in 0 .. depth {
+		res = res.parent()?
+	}
+	if res.is_null() {
+		return none
+	}
+	return res
+}
+
+pub fn (node C.TSNode) parent() ?C.TSNode {
 	if node.is_null() {
 		return none
 	}
@@ -306,6 +328,36 @@ fn (node C.TSNode) parent() ?C.TSNode {
 		return none
 	}
 	return parent
+}
+
+pub fn (node C.TSNode) first_child() ?C.TSNode {
+	if node.is_null() {
+		return none
+	}
+	count_child := node.child_count()
+	if count_child == 0 {
+		return none
+	}
+	child := C.ts_node_child(node, 0)
+	if child.is_null() {
+		return none
+	}
+	return child
+}
+
+pub fn (node C.TSNode) last_child() ?C.TSNode {
+	if node.is_null() {
+		return none
+	}
+	count_child := node.child_count()
+	if count_child == 0 {
+		return none
+	}
+	child := C.ts_node_child(node, count_child - 1)
+	if child.is_null() {
+		return none
+	}
+	return child
 }
 
 fn (node C.TSNode) child(index u32) ?C.TSNode {
@@ -342,7 +394,7 @@ fn (node C.TSNode) named_child_count() u32 {
 	return C.ts_node_named_child_count(node)
 }
 
-fn (node C.TSNode) child_by_field_name(name string) ?C.TSNode {
+pub fn (node C.TSNode) child_by_field_name(name string) ?C.TSNode {
 	if node.is_null() {
 		return none
 	}
@@ -466,8 +518,10 @@ fn (node C.TSNode) named_descendant_for_point_range(start_point C.TSPoint, end_p
 
 fn C.ts_tree_cursor_new(node C.TSNode) C.TSTreeCursor
 
+pub type TSTreeCursor = C.TSTreeCursor
+
 [inline]
-fn (node C.TSNode) tree_cursor() C.TSTreeCursor {
+pub fn (node C.TSNode) tree_cursor() TSTreeCursor {
 	return C.ts_tree_cursor_new(node)
 }
 
@@ -498,8 +552,10 @@ fn (mut cursor C.TSTreeCursor) reset(node C.TSNode) {
 	C.ts_tree_cursor_reset(cursor, node)
 }
 
+pub type TSNode = C.TSNode
+
 [inline]
-fn (cursor &C.TSTreeCursor) current_node() ?C.TSNode {
+pub fn (cursor &C.TSTreeCursor) current_node() ?TSNode {
 	got_node := C.ts_tree_cursor_current_node(cursor)
 	if got_node.is_null() {
 		return none
@@ -508,23 +564,23 @@ fn (cursor &C.TSTreeCursor) current_node() ?C.TSNode {
 }
 
 [inline]
-fn (cursor &C.TSTreeCursor) current_field_name() string {
+pub fn (cursor &C.TSTreeCursor) current_field_name() string {
 	c := &char(C.ts_tree_cursor_current_field_name(cursor))
 	return unsafe { c.vstring() }
 }
 
 [inline]
-fn (mut cursor C.TSTreeCursor) to_parent() bool {
+pub fn (mut cursor C.TSTreeCursor) to_parent() bool {
 	return C.ts_tree_cursor_goto_parent(cursor)
 }
 
 [inline]
-fn (mut cursor C.TSTreeCursor) next() bool {
+pub fn (mut cursor C.TSTreeCursor) next() bool {
 	return C.ts_tree_cursor_goto_next_sibling(cursor)
 }
 
 [inline]
-fn (mut cursor C.TSTreeCursor) to_first_child() bool {
+pub fn (mut cursor C.TSTreeCursor) to_first_child() bool {
 	return C.ts_tree_cursor_goto_first_child(cursor)
 }
 
