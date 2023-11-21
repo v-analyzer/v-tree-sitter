@@ -5,8 +5,8 @@ pub type TSLanguage = C.TSLanguage
 
 pub struct Parser[T] {
 mut:
-	raw_parser   &TSParser          [required]
-	type_factory NodeTypeFactory[T] [required]
+	raw_parser   &TSParser          @[required]
+	type_factory NodeTypeFactory[T] @[required]
 }
 
 pub fn new_parser[T](type_factory NodeTypeFactory[T]) &Parser[T] {
@@ -17,19 +17,19 @@ pub fn new_parser[T](type_factory NodeTypeFactory[T]) &Parser[T] {
 	}
 }
 
-[inline]
+@[inline]
 pub fn (mut p Parser[T]) set_language(language &TSLanguage) {
 	p.raw_parser.set_language(language)
 }
 
-[inline]
+@[inline]
 pub fn (mut p Parser[T]) reset() {
 	p.raw_parser.reset()
 }
 
-[params]
+@[params]
 pub struct ParseConfig {
-	source string  [required]
+	source string  @[required]
 	tree   &TSTree = &TSTree(unsafe { nil })
 }
 
@@ -46,12 +46,12 @@ pub interface NodeTypeFactory[T] {
 }
 
 pub struct Tree[T] {
-	type_factory NodeTypeFactory[T] [required]
+	type_factory NodeTypeFactory[T] @[required]
 pub:
-	raw_tree &TSTree [required]
+	raw_tree &TSTree @[required]
 }
 
-[unsafe]
+@[unsafe]
 pub fn (tree &Tree[T]) free() {
 	unsafe { tree.raw_tree.free() }
 }
@@ -69,18 +69,18 @@ pub fn new_tsnode[T](factory NodeTypeFactory[T], node TSNode) Node[T] {
 }
 
 pub struct Node[T] {
-	type_factory NodeTypeFactory[T] [required]
+	type_factory NodeTypeFactory[T] @[required]
 pub:
-	raw_node  TSNode [required]
-	type_name T      [required]
+	raw_node  TSNode @[required]
+	type_name T      @[required]
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) text(text string) string {
 	return node.raw_node.text(text)
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) text_matches(all_text string, text_to_find string) bool {
 	text_len := u32(text_to_find.len)
 	node_len := node.text_length()
@@ -94,7 +94,7 @@ pub fn (node Node[T]) text_matches(all_text string, text_to_find string) bool {
 	return node.text(all_text) == text_to_find
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) first_char(text string) u8 {
 	start_index := node.start_byte()
 	if start_index >= u32(text.len) {
@@ -103,74 +103,74 @@ pub fn (node Node[T]) first_char(text string) u8 {
 	return text[start_index]
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) text_length() u32 {
 	start := node.raw_node.start_byte()
 	end := node.raw_node.end_byte()
 	return end - start
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) str() string {
 	return node.raw_node.sexpr_str()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) start_point() TSPoint {
 	return node.raw_node.start_point()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) end_point() TSPoint {
 	return node.raw_node.end_point()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) start_byte() u32 {
 	return node.raw_node.start_byte()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) end_byte() u32 {
 	return node.raw_node.end_byte()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) range() TSRange {
 	return node.raw_node.range()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_null() bool {
 	return node.raw_node.is_null()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_leaf() bool {
 	return node.child_count() == 0
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_named() bool {
 	return node.raw_node.is_named()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_missing() bool {
 	return node.raw_node.is_missing()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_extra() bool {
 	return node.raw_node.is_extra()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) has_changes() bool {
 	return node.raw_node.has_changes()
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) is_error() bool {
 	return node.raw_node.is_error()
 }
@@ -206,7 +206,7 @@ pub fn (node Node[T]) child(pos u32) ?Node[T] {
 	return new_tsnode[T](node.type_factory, child)
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) child_count() u32 {
 	return node.raw_node.child_count()
 }
@@ -216,7 +216,7 @@ pub fn (node Node[T]) named_child(pos u32) ?Node[T] {
 	return new_tsnode[T](node.type_factory, child)
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) named_child_count() u32 {
 	return node.raw_node.named_child_count()
 }
@@ -320,17 +320,17 @@ pub fn (node Node[T]) last_node_by_type(type_name T) ?Node[T] {
 	return none
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) == (other_node Node[T]) bool {
 	return C.ts_node_eq(node.raw_node, other_node.raw_node)
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) equal(other_node Node[T]) bool {
 	return C.ts_node_eq(node.raw_node, other_node.raw_node)
 }
 
-[inline]
+@[inline]
 pub fn (node Node[T]) tree_cursor() TreeCursor[T] {
 	return TreeCursor[T]{
 		type_factory: node.type_factory
@@ -339,38 +339,38 @@ pub fn (node Node[T]) tree_cursor() TreeCursor[T] {
 }
 
 pub struct TreeCursor[T] {
-	type_factory NodeTypeFactory[T] [required]
+	type_factory NodeTypeFactory[T] @[required]
 pub mut:
-	raw_cursor C.TSTreeCursor [required]
+	raw_cursor C.TSTreeCursor @[required]
 }
 
-[inline]
+@[inline]
 pub fn (mut cursor TreeCursor[T]) reset(node Node[T]) {
 	cursor.raw_cursor.reset(node.raw_node)
 }
 
-[inline]
+@[inline]
 pub fn (cursor TreeCursor[T]) current_node() ?Node[T] {
 	got_node := cursor.raw_cursor.current_node()?
 	return new_tsnode[T](cursor.type_factory, got_node)
 }
 
-[inline]
+@[inline]
 pub fn (cursor TreeCursor[T]) current_field_name() string {
 	return cursor.raw_cursor.current_field_name()
 }
 
-[inline]
+@[inline]
 pub fn (mut cursor TreeCursor[T]) to_parent() bool {
 	return cursor.raw_cursor.to_parent()
 }
 
-[inline]
+@[inline]
 pub fn (mut cursor TreeCursor[T]) next() bool {
 	return cursor.raw_cursor.next()
 }
 
-[inline]
+@[inline]
 pub fn (mut cursor TreeCursor[T]) to_first_child() bool {
 	return cursor.raw_cursor.to_first_child()
 }
