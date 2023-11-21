@@ -2,9 +2,7 @@ name: Test
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   test-linux:
@@ -20,11 +18,9 @@ jobs:
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
-          path: v-tree-sitter
+          path: v_tree_sitter
       - name: Run tests
-        run: |
-          cd v-tree-sitter
-          v test .
+        run: v test v_tree_sitter
 
   test-macos:
     runs-on: macos-latest
@@ -39,11 +35,9 @@ jobs:
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
-          path: v-tree-sitter
-      - name: Compile
-        run: |
-          cd v-tree-sitter
-          v test .
+          path: v_tree_sitter
+      - name: Run tests
+        run: v test v_tree_sitter
 
   test-windows:
     runs-on: windows-latest
@@ -59,8 +53,6 @@ jobs:
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
-          path: v-tree-sitter
-      - name: Compile
-        run: |
-          cd v-tree-sitter
-          v test .
+          path: v_tree_sitter
+      - name: Run tests
+        run: v test v_tree_sitter
