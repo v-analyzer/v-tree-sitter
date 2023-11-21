@@ -1,7 +1,7 @@
 module tests
 
-import tree_sitter
-import languages.tree_sitter_v as v
+import v_tree_sitter.tree_sitter
+import v_tree_sitter.languages.tree_sitter_v as v
 
 fn test_simple() {
 	mut p := tree_sitter.new_parser[v.NodeType](v.type_factory)
