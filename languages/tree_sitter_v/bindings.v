@@ -1,6 +1,6 @@
 module tree_sitter_v
 
-import v_tree_sitter.tree_sitter
+import tree_sitter
 
 #flag -I @VMODROOT/src
 #flag @VMODROOT/src/scanner.o

@@ -1,7 +1,7 @@
 module main
 
-import v_tree_sitter.tree_sitter
-import v_tree_sitter.languages.tree_sitter_v as v
+import tree_sitter
+import languages.tree_sitter_v as v
 
 fn main() {
 	mut p := tree_sitter.new_parser[v.NodeType](v.type_factory)
