@@ -11,26 +11,28 @@ module tree_sitter
 #flag -I @VMODROOT/lib
 #include "api.h"
 
-enum TSVInputEncoding {
+pub enum TSVInputEncoding {
 	utf8
 	utf16
 }
 
+pub type C.TSInputEncoding = TSVInputEncoding
+
 @[typedef]
-struct C.TSInput {
+pub struct C.TSInput {
 mut:
 	payload  voidptr
 	read     fn (payload voidptr, byte_index u32, position C.TSPoint, bytes_read &u32) &char
-	encoding TSVInputEncoding
+	encoding int
 }
 
 @[typedef]
-struct C.TSParser {}
+pub struct C.TSParser {}
 
 fn C.ts_parser_new() &C.TSParser
 fn C.ts_parser_set_language(parser &C.TSParser, language &C.TSLanguage) bool
-fn C.ts_parser_parse_string(parser &C.TSParser, old_tree &TSTree, str &char, len u32) &TSTree
-fn C.ts_parser_parse(parser &C.TSParser, old_tree &TSTree, input C.TSInput) &TSTree
+fn C.ts_parser_parse_string(parser &C.TSParser, const_old_tree &C.TSTree, str &char, len u32) &C.TSTree
+fn C.ts_parser_parse(parser &C.TSParser, const_old_tree &C.TSTree, input C.TSInput) &C.TSTree
 fn C.ts_parser_delete(tree &C.TSParser)
 fn C.ts_parser_reset(parser &C.TSParser)
 
@@ -41,7 +43,7 @@ fn new_ts_parser() &C.TSParser {
 
 @[inline]
 fn (mut p C.TSParser) parse(old_tree &TSTree, input C.TSInput) &TSTree {
-	return C.ts_parser_parse(p, old_tree, input)
+	return &TSTree( C.ts_parser_parse(p, voidptr(old_tree), input) )
 }
 
 @[inline]
@@ -66,7 +68,7 @@ fn (mut p C.TSParser) parse_string_with_old_tree(content string, old_tree &TSTre
 
 @[inline]
 fn (mut p C.TSParser) parse_string_with_old_tree_and_len(content string, old_tree &TSTree, len u32) &TSTree {
-	return C.ts_parser_parse_string(p, old_tree, &char(content.str), len)
+	return &TSTree(C.ts_parser_parse_string(p, voidptr(old_tree), &char(content.str), len))
 }
 
 @[inline]
@@ -93,7 +95,7 @@ fn (mut p C.TSParser) parse_bytes_with_old_tree(content []u8, old_tree &TSTree) 
 	return p.parse(old_tree,
 		payload: &content
 		read: byte_array_input_read
-		encoding: .utf8
+		encoding: int(TSVInputEncoding.utf8)
 	)
 }
 
@@ -105,37 +107,41 @@ fn (p &C.TSParser) free() {
 }
 
 @[typedef]
-struct C.TSLanguage {}
+pub struct C.TSLanguage {}
 
-@[export: 'TSTree']
-struct TSTree {
+pub struct C.TSTree {
 	included_range_count u32
 }
 
-fn C.ts_tree_copy(tree &TSTree) &TSTree
-fn C.ts_tree_root_node(tree &TSTree) C.TSNode
-fn C.ts_tree_delete(tree &TSTree)
-fn C.ts_tree_edit(tree &TSTree, edit &C.TSInputEdit)
-fn C.ts_tree_get_changed_ranges(old_tree &TSTree, new_tree &TSTree, count &u32) &C.TSRange
+@[export: 'TSTree']
+pub struct TSTree {
+	included_range_count u32
+}
+
+fn C.ts_tree_copy(tree &C.TSTree) &C.TSTree
+fn C.ts_tree_root_node(tree &C.TSTree) C.TSNode
+fn C.ts_tree_delete(tree &C.TSTree)
+fn C.ts_tree_edit(tree &C.TSTree, edit &C.TSInputEdit)
+fn C.ts_tree_get_changed_ranges(old_tree &C.TSTree, new_tree &C.TSTree, count &u32) &C.TSRange
 
 @[inline]
 fn (tree &TSTree) copy() &TSTree {
-	return C.ts_tree_copy(tree)
+	return &TSTree(C.ts_tree_copy(voidptr(tree)))
 }
 
 @[inline]
 fn (tree &TSTree) root_node() C.TSNode {
-	return C.ts_tree_root_node(tree)
+	return C.ts_tree_root_node(&C.TSTree(tree))
 }
 
 @[inline]
 fn (tree &TSTree) edit(input_edit &C.TSInputEdit) {
-	C.ts_tree_edit(tree, input_edit)
+	C.ts_tree_edit(&C.TSTree(tree), input_edit)
 }
 
 fn (tree &TSTree) get_changed_ranges(new_tree &TSTree) []C.TSRange {
 	mut len := u32(0)
-	buf := C.ts_tree_get_changed_ranges(tree, new_tree, &len)
+	buf := C.ts_tree_get_changed_ranges(&C.TSTree(tree), &C.TSTree(new_tree), &len)
 	element_size := int(sizeof(C.TSRange))
 
 	return unsafe {
@@ -151,12 +157,12 @@ fn (tree &TSTree) get_changed_ranges(new_tree &TSTree) []C.TSRange {
 @[unsafe]
 fn (tree &TSTree) free() {
 	unsafe {
-		C.ts_tree_delete(tree)
+		C.ts_tree_delete(&C.TSTree(tree))
 	}
 }
 
 @[typedef]
-struct C.TSNode {
+pub struct C.TSNode {
 	tree &TSTree
 }
 
@@ -526,7 +532,7 @@ pub fn (node C.TSNode) tree_cursor() TSTreeCursor {
 }
 
 @[typedef]
-struct C.TSTreeCursor {
+pub struct C.TSTreeCursor {
 	tree    voidptr
 	id      voidptr
 	context [2]u32
@@ -585,7 +591,7 @@ pub fn (mut cursor C.TSTreeCursor) to_first_child() bool {
 }
 
 @[typedef]
-struct C.TSInputEdit {
+pub struct C.TSInputEdit {
 	start_byte    u32
 	old_end_byte  u32
 	new_end_byte  u32
@@ -595,7 +601,7 @@ struct C.TSInputEdit {
 }
 
 @[typedef]
-struct C.TSPoint {
+pub struct C.TSPoint {
 pub:
 	row    u32
 	column u32
@@ -606,7 +612,7 @@ fn (left_point C.TSPoint) eq(right_point C.TSPoint) bool {
 }
 
 @[typedef]
-struct C.TSRange {
+pub struct C.TSRange {
 pub:
 	start_point C.TSPoint
 	end_point   C.TSPoint

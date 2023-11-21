@@ -20,3 +20,8 @@ bin/
 
 # vweb and database
 *.db
+
+examples/simple
+examples/cursor
+examples/with_old_tree
+
