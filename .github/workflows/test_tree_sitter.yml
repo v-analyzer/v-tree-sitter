@@ -57,7 +57,10 @@ jobs:
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
-          path: ${{ env.HOME }}/.vmodules/v_tree_sitter
+          path: vts
+
+      - name: Copy repo to ~/.vmodules/v_tree_sitter
+        run: Copy-Item -Verbose -Recurse -Path vts -Destination ~/.vmodules/v_tree_sitter
 
       - name: Dir v_tree_sitter
         run: dir "$HOME/.vmodules/v_tree_sitter"
