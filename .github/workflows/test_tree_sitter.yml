@@ -67,7 +67,7 @@ jobs:
 
       - name: Move repo to ~/.vmodules/v_tree_sitter
         run: |
-          move /y v_tree_sitter "$HOME\.vmodules\v_tree_sitter"
+          Move-Item -Verbose -Path v_tree_sitter -Destination "$HOME\.vmodules\v_tree_sitter"
 
       - name: Run tests
         run: v test "$HOME/.vmodules/v_tree_sitter"
