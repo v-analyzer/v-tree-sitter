@@ -53,12 +53,6 @@ jobs:
 
       - name: Echo HOME
         run: echo $HOME
-      - name: Echo %HOME%
-        run: echo %HOME%
-      - name: Echo USERPROFILE
-        run: echo $USERPROFILE
-      - name: Echo %USERPROFILE%
-        run: echo %USERPROFILE%
 
       - name: Install V
         id: install-v
@@ -73,8 +67,7 @@ jobs:
 
       - name: Move repo to ~/.vmodules/v_tree_sitter
         run: |
-          mkdir $HOME/.vmodules
           move /y v_tree_sitter $HOME/.vmodules/v_tree_sitter
 
       - name: Run tests
-        run: v test ${{ env.HOME }}/.vmodules/v_tree_sitter
+        run: v test $HOME/.vmodules/v_tree_sitter
