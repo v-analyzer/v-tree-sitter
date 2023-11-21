@@ -54,16 +54,19 @@ jobs:
       - name: Echo HOME
         run: echo $HOME
 
+      - name: Checkout v-tree-sitter
+        uses: actions/checkout@v3
+        with:
+          path: ${{ env.HOME }}/.vmodules/v_tree_sitter
+		  
+      - name: Dir v_tree_sitter
+        run: dir "$HOME/.vmodules/v_tree_sitter"
+
       - name: Install V
         id: install-v
         uses: vlang/setup-v@v1.3
         with:
           check-latest: true
-
-      - name: Checkout v-tree-sitter
-        uses: actions/checkout@v3
-        with:
-          path: $HOME/.vmodules/v_tree_sitter
 
       - name: Run tests
         run: v test "$HOME/.vmodules/v_tree_sitter"
