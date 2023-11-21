@@ -47,7 +47,8 @@ jobs:
   test-windows:
     runs-on: windows-latest
     env:
-      CC: msvc
+      CC: gcc
+      VFLAGS: -cc gcc
     steps:
       - uses: msys2/setup-msys2@v2
 
