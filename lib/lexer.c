@@ -172,7 +172,9 @@ static void ts_lexer__do_advance(Lexer *self, bool skip) {
     self->current_position.bytes >= current_range->end_byte ||
     current_range->end_byte == current_range->start_byte
   ) {
-    self->current_included_range_index++;
+    if (self->current_included_range_index < self->included_range_count) {
+      self->current_included_range_index++;
+    }
     if (self->current_included_range_index < self->included_range_count) {
       current_range++;
       self->current_position = (Length) {
@@ -209,9 +211,9 @@ static void ts_lexer__advance(TSLexer *_self, bool skip) {
   if (!self->chunk) return;
 
   if (skip) {
-    LOG("skip", self->data.lookahead);
+    LOG("skip", self->data.lookahead)
   } else {
-    LOG("consume", self->data.lookahead);
+    LOG("consume", self->data.lookahead)
   }
 
   ts_lexer__do_advance(self, skip);

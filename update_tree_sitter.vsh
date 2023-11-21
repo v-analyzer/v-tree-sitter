@@ -40,7 +40,7 @@ mut got_version := ''
 
 if exists(version_file_path) {
 	version_file_contents := read_file(version_file_path)!
-	version_obj := json2.fast_raw_decode(version_file_contents)?.as_map()
+	version_obj := json2.fast_raw_decode(version_file_contents)!.as_map()
 	got_version = version_obj['version']!.str()
 } else {
 	println('Version file not found. Proceeding...')

@@ -1,6 +1,7 @@
 #ifndef TREE_SITTER_ATOMIC_H_
 #define TREE_SITTER_ATOMIC_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __TINYC__
@@ -46,11 +47,19 @@ static inline size_t ts_atomic_load(const volatile size_t *p) {
 }
 
 static inline uint32_t ts_atomic_inc(volatile uint32_t *p) {
-  return __sync_add_and_fetch(p, 1u);
+  #ifdef __ATOMIC_RELAXED
+    return __ts_atomic_add_fetch(p, 1U, __ATOMIC_SEQ_CST);
+  #else
+    return __sync_add_and_fetch(p, 1U);
+  #endif
 }
 
 static inline uint32_t ts_atomic_dec(volatile uint32_t *p) {
-  return __sync_sub_and_fetch(p, 1u);
+  #ifdef __ATOMIC_RELAXED
+    return __ts_atomic_sub_fetch(p, 1U, __ATOMIC_SEQ_CST);
+  #else
+    return __sync_sub_and_fetch(p, 1U);
+  #endif
 }
 
 #endif
