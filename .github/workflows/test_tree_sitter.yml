@@ -63,11 +63,7 @@ jobs:
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
-          path: v_tree_sitter
-
-      - name: Move repo to ~/.vmodules/v_tree_sitter
-        run: |
-          Move-Item -Verbose -Path v_tree_sitter -Destination "$HOME\.vmodules\v_tree_sitter"
+          path: $HOME/.vmodules/v_tree_sitter
 
       - name: Run tests
         run: v test "$HOME/.vmodules/v_tree_sitter"
