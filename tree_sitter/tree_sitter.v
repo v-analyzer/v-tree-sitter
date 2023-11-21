@@ -5,7 +5,7 @@ pub type TSLanguage = C.TSLanguage
 
 pub struct Parser[T] {
 mut:
-	raw_parser   &TSParser          @[required]
+	raw_parser   &TSParser = unsafe { nil }          @[required]
 	type_factory NodeTypeFactory[T] @[required]
 }
 
@@ -48,7 +48,7 @@ pub interface NodeTypeFactory[T] {
 pub struct Tree[T] {
 	type_factory NodeTypeFactory[T] @[required]
 pub:
-	raw_tree &TSTree @[required]
+	raw_tree &TSTree = unsafe { nil } @[required]
 }
 
 @[unsafe]
