@@ -43,24 +43,38 @@ jobs:
       - name: Run tests
         run: v test ~/.vmodules/v_tree_sitter
 
+
   test-windows:
     runs-on: windows-latest
     env:
       CC: msvc
     steps:
       - uses: msys2/setup-msys2@v2
+
+      - name: Echo HOME
+        run: echo $HOME
+      - name: Echo %HOME%
+        run: echo %HOME%
+      - name: Echo USERPROFILE
+        run: echo $USERPROFILE
+      - name: Echo %USERPROFILE%
+        run: echo %USERPROFILE%
+
       - name: Install V
         id: install-v
         uses: vlang/setup-v@v1.3
         with:
           check-latest: true
+
       - name: Checkout v-tree-sitter
         uses: actions/checkout@v3
         with:
           path: v_tree_sitter
+
       - name: Move repo to ~/.vmodules/v_tree_sitter
         run: |
-          mkdir ${{ env.HOME }}/.vmodules
-          move /y v_tree_sitter ${{ env.HOME }}/.vmodules/v_tree_sitter
+          mkdir $HOME/.vmodules
+          move /y v_tree_sitter $HOME/.vmodules/v_tree_sitter
+
       - name: Run tests
         run: v test ${{ env.HOME }}/.vmodules/v_tree_sitter
